@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau KPI et Actions</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background-color: #f9f9f9; }
+h1 { text-align: center; color: #333; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+thead th { background-color: #004C97; color: #fff; padding: 8px; border: 1px solid #ddd; }
+tbody tr:nth-child(even) { background-color: #f2f2f2; }
+tbody tr:nth-child(odd) { background-color: #ffffff; }
+td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
+textarea, input, select { width: 100%; box-sizing: border-box; padding: 4px; font-size: 0.9rem; }
+textarea { height: 60px; }
+</style>
+</head>
+<body>
+<h1>Tableau des KPI et Actions en cours</h1>
+<table>
+<thead>
+<tr><th>Domaine</th><th>KPI</th><th>Description</th><th>Formule ou unité</th><th>Objectif sur 3 mois</th><th>Sous-tâches / Activités</th><th>Responsable</th><th>Échéance</th><th>Statut</th><th>Commentaires</th></tr>
+</thead>
+<tbody>
+<tr><td>SST</td><td>Taux de fréquence (TF)</td><td>Nombre d’accidents ou de décès par 200 000 heures travaillées; mesure l’exposition au risque</td><td>(Nombre de lésions/d’accidents incluant décès et incapacité) / 200 000 heures</td><td>Réduire le TF de 10 % en mettant en œuvre des actions de prévention et d’inspection régulières</td><td><input type="text" id="cell-0-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-0-Responsable" value="" /></td><td><input type="text" id="cell-0-Échéance" value="" /></td><td><select id="cell-0-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-0-Commentaires"></textarea></td></tr>
+<tr><td>SST</td><td>Taux de gravité (TG)</td><td>Nombre de jours indemnisés pour blessures rapporté aux heures travaillées; donne une idée de la gravité des accidents</td><td>Nombre de jours indemnisés ÷ nombre d’heures travaillées</td><td>Réduire le TG de 15 % en limitant la durée des arrêts par des actions de prévention et de réinsertion</td><td><input type="text" id="cell-1-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-1-Responsable" value="" /></td><td><input type="text" id="cell-1-Échéance" value="" /></td><td><select id="cell-1-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-1-Commentaires"></textarea></td></tr>
+<tr><td>SST</td><td>Taux de fréquence OSHA</td><td>Pourcentage de travailleurs ayant subi une lésion nécessitant des soins médicaux ou restreignant leur activité</td><td>(Nombre de travailleurs blessés nécessitant soins ou restriction) / effectif × 100</td><td>Réduire de 10 % la fréquence des blessures nécessitant des soins grâce à la formation et à l’amélioration des postes</td><td><input type="text" id="cell-2-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-2-Responsable" value="" /></td><td><input type="text" id="cell-2-Échéance" value="" /></td><td><select id="cell-2-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-2-Commentaires"></textarea></td></tr>
+<tr><td>Communication</td><td>Taux de consultation des contenus</td><td>Pourcentage de salariés ayant vu une page, un document ou une annonce sur l’intranet; indique si les messages atteignent la cible</td><td>Nombre de salariés ayant consulté le contenu ÷ nombre total de salariés visés × 100</td><td>Atteindre un taux de consultation ≥ 80 % grâce à des campagnes ciblées et à une meilleure mise en avant des contenus</td><td><input type="text" id="cell-3-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-3-Responsable" value="" /></td><td><input type="text" id="cell-3-Échéance" value="" /></td><td><select id="cell-3-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-3-Commentaires"></textarea></td></tr>
+<tr><td>Communication</td><td>Taux d’engagement des employés</td><td>Mesure la participation (clics, commentaires, partages, réponses aux sondages) des collaborateurs aux communications internes</td><td>Nombre d’interactions (clics, commentaires, partages, réponses) ÷ nombre d’utilisateurs actifs</td><td>Augmenter l’engagement de 15 % en sollicitant des feedbacks et en diversifiant les formats (vidéo, sondage)</td><td><input type="text" id="cell-4-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-4-Responsable" value="" /></td><td><input type="text" id="cell-4-Échéance" value="" /></td><td><select id="cell-4-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-4-Commentaires"></textarea></td></tr>
+<tr><td>Communication</td><td>Satisfaction des employés vis‑à‑vis de la communication</td><td>Résultat des enquêtes internes sur la clarté, la fréquence et l’utilité de la communication interne</td><td>Score moyen d’une enquête (par exemple de 1 à 5) ou pourcentage de réponses positives</td><td>Atteindre un score ≥ 75 % ou 4/5 en améliorant la transparence et la régularité des messages</td><td><input type="text" id="cell-5-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-5-Responsable" value="" /></td><td><input type="text" id="cell-5-Échéance" value="" /></td><td><select id="cell-5-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-5-Commentaires"></textarea></td></tr>
+<tr><td>RH/Formation</td><td>Taux de participation aux formations</td><td>Part des collaborateurs ayant suivi au moins une formation pendant la période</td><td>(Nombre de participants aux formations ÷ nombre de collaborateurs concernés) × 100</td><td>Porter la participation à 90 % en facilitant l’accès aux sessions et en adaptant les horaires</td><td><input type="text" id="cell-6-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-6-Responsable" value="" /></td><td><input type="text" id="cell-6-Échéance" value="" /></td><td><select id="cell-6-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-6-Commentaires"></textarea></td></tr>
+<tr><td>RH/Formation</td><td>Coût moyen de formation par salarié</td><td>Montant moyen investi dans la formation de chaque collaborateur; permet de piloter le budget</td><td>Coût total des formations ÷ nombre d’employés formés</td><td>Optimiser le coût par salarié (–10 %) en privilégiant des formations internes et des programmes en ligne</td><td><input type="text" id="cell-7-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-7-Responsable" value="" /></td><td><input type="text" id="cell-7-Échéance" value="" /></td><td><select id="cell-7-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-7-Commentaires"></textarea></td></tr>
+<tr><td>RH/Formation</td><td>Mise en pratique des nouvelles compétences</td><td>Mesure, via des évaluations à chaud et à froid et le modèle de Kirkpatrick, la part des compétences réellement appliquées en poste</td><td>Score d’évaluation (grille ou enquête) mesurant l’application des compétences dans le travail</td><td>Atteindre 80 % de mise en pratique grâce à un suivi post‑formation et à des plans d’action personnalisés</td><td><input type="text" id="cell-8-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-8-Responsable" value="" /></td><td><input type="text" id="cell-8-Échéance" value="" /></td><td><select id="cell-8-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-8-Commentaires"></textarea></td></tr>
+<tr><td>Traçabilité/Inventaire</td><td>Taux de rotation des stocks</td><td>Mesure le nombre de fois où le stock est renouvelé sur une période; reflète la fluidité des flux</td><td>Valeur économique des marchandises expédiées ÷ valeur moyenne des marchandises stockées</td><td>Optimiser la rotation en ciblant l’intervalle optimal (par ex. +10 %) pour réduire l’immobilisation de capital</td><td><input type="text" id="cell-9-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-9-Responsable" value="" /></td><td><input type="text" id="cell-9-Échéance" value="" /></td><td><select id="cell-9-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-9-Commentaires"></textarea></td></tr>
+<tr><td>Traçabilité/Inventaire</td><td>Taux de retour de stock</td><td>Pourcentage de marchandises vendues puis retournées en entrepôt; indique des erreurs de préparation ou de livraison</td><td>(Nombre d’articles retournés ÷ nombre d’articles vendus) × 100</td><td>Réduire le taux de retour à < 5 % en renforçant le contrôle qualité et en améliorant la préparation des commandes</td><td><input type="text" id="cell-10-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-10-Responsable" value="" /></td><td><input type="text" id="cell-10-Échéance" value="" /></td><td><select id="cell-10-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-10-Commentaires"></textarea></td></tr>
+<tr><td>Traçabilité/Inventaire</td><td>Taux de vente directe (STR)</td><td>Pourcentage de stocks vendus par rapport à la quantité reçue; renseigne sur l’écoulement des produits</td><td>(Quantité de stock vendu ÷ quantité de stock reçu) × 100</td><td>Atteindre ou maintenir un STR ≥ 80 % en adaptant les niveaux de commande aux tendances de vente</td><td><input type="text" id="cell-11-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-11-Responsable" value="" /></td><td><input type="text" id="cell-11-Échéance" value="" /></td><td><select id="cell-11-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-11-Commentaires"></textarea></td></tr>
+<tr><td>Optimisation des opérations et ressources</td><td>Disponibilité des équipements</td><td>Temps où la machine est prête à produire par rapport au temps de chargement (temps planifié)</td><td>Disponibilité = temps de production ÷ temps de chargement</td><td>Atteindre une disponibilité ≥ 90 % en réduisant les pannes et les temps d’attente</td><td><input type="text" id="cell-12-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-12-Responsable" value="" /></td><td><input type="text" id="cell-12-Échéance" value="" /></td><td><select id="cell-12-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-12-Commentaires"></textarea></td></tr>
+<tr><td>Optimisation des opérations et ressources</td><td>Efficacité Globale des Équipements (OEE/TRS)</td><td>Indicateur combinant disponibilité, performance et qualité; mesure l’efficacité globale de la production</td><td>OEE = Disponibilité × Performance × Qualité</td><td>Atteindre un OEE ≥ 85 % en améliorant la cadence, en réduisant les arrêts et en diminuant le taux de rebut</td><td><input type="text" id="cell-13-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-13-Responsable" value="" /></td><td><input type="text" id="cell-13-Échéance" value="" /></td><td><select id="cell-13-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-13-Commentaires"></textarea></td></tr>
+<tr><td>Optimisation des opérations et ressources</td><td>Temps moyen de réparation (MTTR)</td><td>Temps moyen nécessaire pour réparer un équipement après une panne; reflète l’efficacité des équipes de maintenance</td><td>MTTR = temps total de maintenance ÷ nombre de réparations</td><td>Réduire le MTTR de 20 % grâce à une meilleure préparation des interventions et à la disponibilité des pièces</td><td><input type="text" id="cell-14-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-14-Responsable" value="" /></td><td><input type="text" id="cell-14-Échéance" value="" /></td><td><select id="cell-14-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-14-Commentaires"></textarea></td></tr>
+<tr><td>Optimisation des opérations et ressources</td><td>Temps moyen entre pannes (MTBF)</td><td>Durée moyenne de fonctionnement ininterrompu d’un équipement; mesure la fiabilité</td><td>MTBF = temps de fonctionnement total ÷ nombre de pannes</td><td>Augmenter le MTBF de 10 % en développant la maintenance préventive et en renforçant la surveillance des équipements</td><td><input type="text" id="cell-15-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-15-Responsable" value="" /></td><td><input type="text" id="cell-15-Échéance" value="" /></td><td><select id="cell-15-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-15-Commentaires"></textarea></td></tr>
+<tr><td>Déclaration des N/C opérations / qualité</td><td>Taux de non‑conformité détectée</td><td>Fréquence des écarts constatés par rapport aux exigences qualité sur les produits, services ou documents</td><td>(Nombre de non‑conformités détectées ÷ nombre total d’éléments contrôlés) × 100</td><td>Réduire le taux de non‑conformité de 20 % en mettant en place des contrôles renforcés et des actions correctives ciblées</td><td><input type="text" id="cell-16-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-16-Responsable" value="" /></td><td><input type="text" id="cell-16-Échéance" value="" /></td><td><select id="cell-16-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-16-Commentaires"></textarea></td></tr>
+<tr><td>Déclaration des N/C opérations / qualité</td><td>Délai moyen de traitement des non‑conformités</td><td>Temps moyen entre la détection d’une non‑conformité et sa clôture; mesure la réactivité</td><td>Somme des délais de traitement ÷ nombre de non‑conformités traitées</td><td>Ramener le délai moyen à moins d’une semaine en clarifiant les responsabilités et en accélérant le suivi des actions</td><td><input type="text" id="cell-17-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-17-Responsable" value="" /></td><td><input type="text" id="cell-17-Échéance" value="" /></td><td><select id="cell-17-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-17-Commentaires"></textarea></td></tr>
+<tr><td>Déclaration des N/C opérations / qualité</td><td>Taux de clôture des actions correctives dans les délais</td><td>Proportion d’actions correctives finalisées dans le délai prévu</td><td>(Nombre d’actions correctives clôturées à temps ÷ nombre total d’actions prévues) × 100</td><td>Atteindre un taux ≥ 95 % en priorisant les actions, en suivant l’avancement et en impliquant les responsables</td><td><input type="text" id="cell-18-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-18-Responsable" value="" /></td><td><input type="text" id="cell-18-Échéance" value="" /></td><td><select id="cell-18-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-18-Commentaires"></textarea></td></tr>
+<tr><td>Déclaration des N/C opérations / qualité</td><td>Coût de la non‑qualité</td><td>Somme des coûts associés aux incidents de non‑qualité (retours produits, rebuts, litiges clients)</td><td>Somme des coûts sur une période donnée</td><td>Réduire les coûts de non‑qualité de 15 % en améliorant les processus et en responsabilisant les équipes</td><td><input type="text" id="cell-19-Sous-tâches / Activités" value="" /></td><td><input type="text" id="cell-19-Responsable" value="" /></td><td><input type="text" id="cell-19-Échéance" value="" /></td><td><select id="cell-19-Statut">
+                <option value=""></option>
+                <option value="Non commencé">Non commencé</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+            </select></td><td><textarea id="cell-19-Commentaires"></textarea></td></tr>
+</tbody>
+</table>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Load saved values
+  const inputs = document.querySelectorAll('input, textarea, select');
+  inputs.forEach(input => {
+    const savedValue = localStorage.getItem(input.id);
+    if (savedValue !== null) {
+      input.value = savedValue;
+    }
+    // Add event listener to save on change
+    input.addEventListener('change', () => {
+      localStorage.setItem(input.id, input.value);
+    });
+  });
+});
+</script>
+</body>
+</html>
