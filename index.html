@@ -79,6 +79,99 @@
       flex: 1 1 auto;
       height: auto;
     }
+    /* Layout for dashboard: create a sidebar for navigation and filters, and a main content area */
+    .layout {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 240px;
+      background-color: #0b3150;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .sidebar .logo-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .sidebar .logo-container img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    .sidebar .nav {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 30px;
+    }
+    .sidebar .nav a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 14px;
+    }
+    .sidebar .nav a:hover {
+      color: var(--accent-color);
+    }
+    .sidebar .filters {
+      margin-top: auto;
+    }
+    .sidebar .filters h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--accent-color);
+    }
+    .sidebar label {
+      font-size: 12px;
+      margin-top: 10px;
+      display: block;
+    }
+    .sidebar select {
+      width: 100%;
+      padding: 6px;
+      border-radius: 4px;
+      border: none;
+      margin-top: 4px;
+      background-color: #1f3a55;
+      color: #ffffff;
+    }
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-color);
+    }
+    .main-header {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--header-bg);
+      border-bottom: 2px solid var(--accent-color);
+    }
+    .main-header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #ffffff;
+    }
+    .main-header a {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    /* Container for the dashboard cards inside main-content */
+    .dashboard-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
     /* Increase font sizes and card dimensions on very large screens (e.g. 85'' TV) */
     @media screen and (min-width: 1600px) {
       header h1 {
@@ -93,19 +186,47 @@
         /* The number of columns will be dynamically calculated in renderDashboard(). */
       }
     }
-  </style>
+</style>
 </head>
 <body>
-  <header>
-    <!-- Company logo -->
-    <img src="assets/logo.png" alt="Logo AEM" class="logo" />
-    <h1>OPS Plan 3&nbsp;mois (septembre à décembre)</h1>
-  </header>
-  <div class="admin-link">
-    <a href="admin.html"><i class="fa fa-edit"></i> Mode Admin</a>
-  </div>
-  <div class="container" id="dashboardContainer">
-    <!-- Cards will be injected here by JavaScript -->
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="assets/logo.png" alt="Logo AEM">
+        <span style="font-size:16px; font-weight:bold; color:#ffffff;">AEM</span>
+      </div>
+      <div class="nav">
+        <a href="#">Dashboard</a>
+        <a href="#">Plan</a>
+        <a href="#">Fait</a>
+      </div>
+      <div class="filters">
+        <h3>Filtres</h3>
+        <label for="quarterSelect">Trimestre</label>
+        <select id="quarterSelect">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+        <label for="monthSelect">Mois</label>
+        <select id="monthSelect">
+          <option value="Sept">Sept</option>
+          <option value="Oct">Oct</option>
+          <option value="Nov">Nov</option>
+          <option value="Déc">Déc</option>
+        </select>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <h1>OPS Plan 3&nbsp;mois (septembre à décembre)</h1>
+        <a href="admin.html"><i class="fa fa-edit"></i> Mode Admin</a>
+      </div>
+      <div class="dashboard-container" id="dashboardContainer">
+        <!-- Cards will be injected here by JavaScript -->
+      </div>
+    </main>
   </div>
   <script>
     // Default data if none is stored in localStorage
@@ -272,15 +393,17 @@
       const container = document.getElementById('dashboardContainer');
       container.innerHTML = '';
       // Compute dynamic grid layout so that all cards fit within the viewport height.
-      const headerEl = document.querySelector('header');
-      const adminLinkEl = document.querySelector('.admin-link');
-      const headerHeight = (headerEl ? headerEl.offsetHeight : 0) + (adminLinkEl ? adminLinkEl.offsetHeight : 0);
+      // In the new layout, the header is contained within the main-content section
+      const headerEl = document.querySelector('.main-header');
+      const headerHeight = headerEl ? headerEl.offsetHeight : 0;
       // Available vertical space for the dashboard (subtract a small margin for padding)
       const availableHeight = window.innerHeight - headerHeight - 40;
       // Determine how many columns can fit based on a minimum card width (approx. 450px + gap)
       const minCardWidth = 450;
       const gapSize = 20;
-      const containerWidth = window.innerWidth - 40; // account for padding/margin
+      // Account for sidebar width when calculating available width for the dashboard
+      const sidebarEl = document.querySelector('.sidebar');
+      const containerWidth = window.innerWidth - (sidebarEl ? sidebarEl.offsetWidth : 0) - 40; // account for padding/margin
       let columns = Math.floor((containerWidth + gapSize) / (minCardWidth + gapSize));
       if (columns < 1) columns = 1;
       const data = loadDashboardData();
