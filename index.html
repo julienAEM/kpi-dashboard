@@ -7,60 +7,93 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-yIKBs6ywmUDbPsf3zHa72FYz8aXTv/jvKgV34KNTxM/Z7mOs6OGCZIiq5lDn8MULy7z6ozqHicw4P93apElnfw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
+    /* CSS custom properties allow the theme to be customized dynamically. */
+    :root {
+      --bg-color: #253746;            /* dark background similar to company palette */
+      --header-bg: #142d48;           /* header background */
+      --card-bg: #1f3a55;             /* card background */
+      --accent-color: #007bff;        /* accent color for titles and links */
+    }
     body {
       margin: 0;
       padding: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background-color: #0c3c60;
+      background-color: var(--bg-color);
       color: #fff;
     }
     header {
       padding: 20px;
-      text-align: center;
-      background-color: #0b3150;
-      border-bottom: 2px solid #11517e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      background-color: var(--header-bg);
+      border-bottom: 2px solid var(--accent-color);
+    }
+    header img.logo {
+      height: 50px;
+      width: auto;
     }
     header h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 36px; /* slightly larger title for better visibility */
+      color: #ffffff;
+    }
+    .admin-link {
+      text-align: right;
+      padding: 0 20px 10px;
+    }
+    .admin-link a {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-size: 14px;
     }
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); /* larger cards on bigger screens */
       gap: 20px;
       padding: 20px;
     }
     .card {
-      background: #0b3150;
-      border: 1px solid #11517e;
+      background: var(--card-bg);
+      border: 1px solid var(--accent-color);
       border-radius: 8px;
       padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
     .card h2 {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #00bfff;
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: var(--accent-color);
     }
     .chart-container {
       position: relative;
-      height: 180px;
+      height: 260px; /* adjust chart height for readability and gauge control */
     }
-    .admin-link {
-      text-align: right;
-      padding: 0 20px 20px;
-    }
-    .admin-link a {
-      color: #00bfff;
-      text-decoration: none;
+    /* Increase font sizes and card dimensions on very large screens (e.g. 85'' TV) */
+    @media screen and (min-width: 1600px) {
+      header h1 {
+        font-size: 42px;
+      }
+      .card h2 {
+        font-size: 24px;
+      }
+      .chart-container {
+        height: 330px;
+      }
+      .container {
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      }
     }
   </style>
 </head>
 <body>
   <header>
+    <!-- Company logo -->
+    <img src="assets/logo.png" alt="Logo AEM" class="logo" />
     <h1>OPS Plan 3&nbsp;mois (septembre à décembre)</h1>
   </header>
   <div class="admin-link">
@@ -215,40 +248,149 @@
       return defaultData;
     }
     
+    // Apply saved theme colours from localStorage and fallback to defaults
+    function applyTheme() {
+      try {
+        const theme = JSON.parse(localStorage.getItem('theme'));
+        if (theme) {
+          Object.entries(theme).forEach(([key, value]) => {
+            document.documentElement.style.setProperty(`--${key}`, value);
+          });
+        }
+      } catch (e) {
+        console.error('Erreur lors du chargement du thème', e);
+      }
+    }
+
     // Render cards and charts
     function renderDashboard() {
       const container = document.getElementById('dashboardContainer');
       container.innerHTML = '';
       const data = loadDashboardData();
       data.categories.forEach((cat, index) => {
+        // Create card container
         const card = document.createElement('div');
         card.className = 'card';
+        // Title and optional link container
+        const titleWrapper = document.createElement('div');
+        titleWrapper.style.display = 'flex';
+        titleWrapper.style.justifyContent = 'space-between';
+        titleWrapper.style.alignItems = 'center';
+        // Title
         const title = document.createElement('h2');
         title.textContent = cat.name;
-        card.appendChild(title);
+        titleWrapper.appendChild(title);
+        // If a URL is provided, add a link icon
+        if (cat.url && cat.url.trim() !== '') {
+          const link = document.createElement('a');
+          link.href = cat.url;
+          link.target = '_blank';
+          link.title = 'Ouvrir le lien dans un nouvel onglet';
+          link.style.color = 'var(--accent-color)';
+          link.style.marginLeft = '10px';
+          link.innerHTML = '<i class="fa fa-link"></i>';
+          titleWrapper.appendChild(link);
+        }
+        card.appendChild(titleWrapper);
+        // Canvas for chart
         const canvas = document.createElement('canvas');
         canvas.id = 'chart-' + index;
         canvas.style.width = '100%';
         canvas.style.height = '180px';
-        card.appendChild(canvas);
+        const chartWrapper = document.createElement('div');
+        chartWrapper.className = 'chart-container';
+        chartWrapper.appendChild(canvas);
+        card.appendChild(chartWrapper);
         container.appendChild(card);
-        // Chart options
-        new Chart(canvas.getContext('2d'), {
-          type: cat.type,
-          data: {
-            labels: cat.labels,
-            datasets: cat.datasets
-          },
-          options: {
-            plugins: {
-              legend: {
-                labels: { color: '#fff' }
-              },
-              title: {
-                display: false
+        // Chart configuration depending on type
+        const ctx = canvas.getContext('2d');
+        // Determine options and data for each type
+        let chartConfig;
+        if (cat.type === 'gauge') {
+          // Compute ratio (sum actual / sum objective * 100)
+          const sumObjectif = cat.datasets[0].data.reduce((a, b) => a + b, 0);
+          const sumReel = cat.datasets[1].data.reduce((a, b) => a + b, 0);
+          const ratio = sumObjectif > 0 ? Math.min(Math.max((sumReel / sumObjectif) * 100, 0), 100) : 0;
+          // Colors: actual colour and a muted remainder colour (use card background)
+          const colourActual = cat.datasets[1].borderColor || cat.datasets[1].backgroundColor || 'rgba(0, 204, 102, 1)';
+          let remainderColour = getComputedStyle(document.documentElement).getPropertyValue('--card-bg') || '#1f3a55';
+          remainderColour = remainderColour.trim();
+          chartConfig = {
+            type: 'doughnut',
+            data: {
+              labels: ['Réel', 'Manquant'],
+              datasets: [{
+                data: [ratio, 100 - ratio],
+                backgroundColor: [colourActual, remainderColour],
+                borderWidth: 0
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '70%',
+              plugins: {
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function (context) {
+                      const label = context.label || '';
+                      const value = context.parsed;
+                      return `${label}: ${value.toFixed(1)}%`;
+                    }
+                  }
+                },
+                // Custom plugin to draw percentage in center
+                centerText: {
+                  // custom option to pass value
+                  value: ratio
+                }
               }
             },
-            scales: {
+            plugins: [{
+              id: 'centerText',
+              afterDraw(chart, args, opts) {
+                // Draw the percentage value in the center of the gauge
+                const { ctx, chartArea } = chart;
+                const { left, top, right, bottom } = chartArea;
+                const width = right - left;
+                const height = bottom - top;
+                ctx.save();
+                ctx.font = 'bold 24px Arial';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const value = opts.value || 0;
+                ctx.fillText(`${value.toFixed(1)}%`, left + width / 2, top + height / 2);
+                ctx.restore();
+              }
+            }]
+          };
+        } else {
+          // Normal charts: bar, line, pie, doughnut, radar
+          chartConfig = {
+            type: cat.type,
+            data: {
+              labels: cat.labels,
+              datasets: cat.datasets
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  labels: { color: '#fff' }
+                },
+                title: {
+                  display: false
+                }
+              }
+            }
+          };
+          // If chart type requires scales, add them
+          if (cat.type === 'bar' || cat.type === 'line' || cat.type === 'radar') {
+            chartConfig.options.scales = {
               x: {
                 ticks: { color: '#fff' },
                 grid: { color: 'rgba(255, 255, 255, 0.1)' }
@@ -258,13 +400,18 @@
                 grid: { color: 'rgba(255, 255, 255, 0.1)' },
                 beginAtZero: true
               }
-            }
+            };
           }
-        });
+        }
+        new Chart(ctx, chartConfig);
       });
     }
     
-    document.addEventListener('DOMContentLoaded', renderDashboard);
+    // When the document is ready, apply the theme then render the dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      renderDashboard();
+    });
   </script>
 </body>
 </html>
