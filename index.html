@@ -72,6 +72,24 @@
       margin-bottom: 15px;
       color: var(--accent-color);
     }
+
+    /* Action buttons (comment, export) */
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--accent-color);
+      cursor: pointer;
+      margin-left: 8px;
+      font-size: 16px;
+    }
+
+    /* Display for saved comment */
+    .comment-display {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #cccccc;
+      white-space: pre-wrap;
+    }
     .chart-container {
       position: relative;
       /* Let the chart container expand to fill available vertical space
@@ -374,6 +392,27 @@
       }
       return defaultData;
     }
+
+  // Helper to load a comment for a given category index
+  function loadComment(index) {
+    return localStorage.getItem('comment_' + index) || '';
+  }
+  // Save a comment for a given category index
+  function saveComment(index, text) {
+    localStorage.setItem('comment_' + index, text);
+  }
+  // Download a specific chart as an image
+  function downloadChart(index) {
+    const canvas = document.getElementById('chart-' + index);
+    if (!canvas) return;
+    const data = loadDashboardData();
+    const name = data.categories[index] ? data.categories[index].name : 'chart';
+    const link = document.createElement('a');
+    link.download = name + '.png';
+    link.href = canvas.toDataURL('image/png');
+    // Trigger download
+    link.click();
+  }
     
     // Apply saved theme colours from localStorage and fallback to defaults
     function applyTheme() {
@@ -443,6 +482,45 @@
           link.innerHTML = '<i class="fa fa-link"></i>';
           titleWrapper.appendChild(link);
         }
+        // Threshold indicator
+        if (typeof cat.threshold === 'number' && !isNaN(cat.threshold)) {
+          const sumObj = cat.datasets[0].data.reduce((a, b) => a + b, 0);
+          const sumReel = cat.datasets[1].data.reduce((a, b) => a + b, 0);
+          const ratioPct = sumObj > 0 ? (sumReel / sumObj) * 100 : 0;
+          const indicator = document.createElement('span');
+          indicator.style.marginLeft = '10px';
+          if (ratioPct >= cat.threshold) {
+            indicator.innerHTML = '<i class="fa fa-arrow-up" style="color:#00cc66;"></i>';
+          } else {
+            indicator.innerHTML = '<i class="fa fa-arrow-down" style="color:#e74c3c;"></i>';
+          }
+          titleWrapper.appendChild(indicator);
+        }
+        // Export button
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'action-btn';
+        exportBtn.title = 'Exporter le graphique';
+        exportBtn.innerHTML = '<i class="fa fa-download"></i>';
+        exportBtn.onclick = (e) => {
+          e.stopPropagation();
+          downloadChart(index);
+        };
+        titleWrapper.appendChild(exportBtn);
+        // Comment button
+        const commentBtn = document.createElement('button');
+        commentBtn.className = 'action-btn';
+        commentBtn.title = 'Ajouter ou modifier un commentaire';
+        commentBtn.innerHTML = '<i class="fa fa-comment"></i>';
+        commentBtn.onclick = (e) => {
+          e.stopPropagation();
+          const existing = loadComment(index);
+          const newCom = prompt('Entrer un commentaire pour "' + cat.name + '" :', existing || '');
+          if (newCom !== null) {
+            saveComment(index, newCom.trim());
+            renderDashboard();
+          }
+        };
+        titleWrapper.appendChild(commentBtn);
         card.appendChild(titleWrapper);
         // Canvas for chart
         const canvas = document.createElement('canvas');
@@ -454,6 +532,14 @@
         chartWrapper.className = 'chart-container';
         chartWrapper.appendChild(canvas);
         card.appendChild(chartWrapper);
+        // Display saved comment below the chart
+        const commentText = loadComment(index);
+        if (commentText) {
+          const commentDiv = document.createElement('div');
+          commentDiv.className = 'comment-display';
+          commentDiv.textContent = 'Commentaire : ' + commentText;
+          card.appendChild(commentDiv);
+        }
         container.appendChild(card);
         // Chart configuration depending on type
         const ctx = canvas.getContext('2d');
