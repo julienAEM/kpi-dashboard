@@ -109,6 +109,10 @@
     <select id="type">
       <option value="bar">Barres</option>
       <option value="line">Lignes</option>
+      <option value="pie">Secteur (camembert)</option>
+      <option value="doughnut">Anneau</option>
+      <option value="radar">Radar</option>
+      <option value="gauge">Jauge</option>
     </select>
     <label for="labels">Libellés (séparés par des virgules)</label>
     <input type="text" id="labels" placeholder="Sept, Oct, Nov, Déc" />
@@ -116,8 +120,36 @@
     <input type="text" id="dataObjectif" placeholder="80, 80, 80, 80" />
     <label for="dataReel">Données Réel (séparées par des virgules)</label>
     <input type="text" id="dataReel" placeholder="75, 70, 78, 85" />
+
+    <!-- Series label inputs -->
+    <label for="labelObjectif">Nom de la série Objectif</label>
+    <input type="text" id="labelObjectif" placeholder="Objectif" />
+    <label for="labelReel">Nom de la série Réel</label>
+    <input type="text" id="labelReel" placeholder="Réel" />
+
+    <!-- URL link input -->
+    <label for="urlField">Lien URL (facultatif)</label>
+    <input type="text" id="urlField" placeholder="https://exemple.com" />
+
+    <!-- Colour pickers for datasets -->
+    <label for="colorObjectif">Couleur Objectif</label>
+    <input type="color" id="colorObjectif" value="#00cc66" />
+    <label for="colorReel">Couleur Réel</label>
+    <input type="color" id="colorReel" value="#ff6384" />
     <button class="btn btn-save" id="saveBtn">Sauvegarder</button>
     <input type="hidden" id="editIndex" value="" />
+
+    <!-- Theme customization section -->
+    <h2>Personnaliser le thème</h2>
+    <label for="bgColor">Couleur de fond générale</label>
+    <input type="color" id="bgColor" value="#253746" />
+    <label for="headerBg">Couleur de l'en-tête</label>
+    <input type="color" id="headerBg" value="#142d48" />
+    <label for="cardBg">Couleur des cartes</label>
+    <input type="color" id="cardBg" value="#1f3a55" />
+    <label for="accentColor">Couleur d'accent</label>
+    <input type="color" id="accentColor" value="#007bff" />
+    <button class="btn btn-save" id="saveThemeBtn">Sauvegarder le thème</button>
     <h2>Catégories existantes</h2>
     <div class="category-list" id="categoryList"></div>
   </div>
@@ -136,6 +168,23 @@
     }
     function saveDashboardData(data) {
       localStorage.setItem('dashboardData', JSON.stringify(data));
+    }
+
+    // Helpers to convert colour values
+    function hexToRgba(hex, alpha) {
+      const r = parseInt(hex.substring(1, 3), 16);
+      const g = parseInt(hex.substring(3, 5), 16);
+      const b = parseInt(hex.substring(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    function rgbaToHex(rgba) {
+      // Extract numbers from rgba string
+      const result = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if (!result) return '#000000';
+      const r = parseInt(result[1]).toString(16).padStart(2, '0');
+      const g = parseInt(result[2]).toString(16).padStart(2, '0');
+      const b = parseInt(result[3]).toString(16).padStart(2, '0');
+      return `#${r}${g}${b}`;
     }
     // Render list of categories
     function renderCategoryList() {
@@ -168,32 +217,61 @@
       const labels = document.getElementById('labels').value.split(',').map(s => s.trim()).filter(Boolean);
       const dataObjectif = document.getElementById('dataObjectif').value.split(',').map(s => parseFloat(s.trim()));
       const dataReel = document.getElementById('dataReel').value.split(',').map(s => parseFloat(s.trim()));
+      const colObjHex = document.getElementById('colorObjectif').value;
+      const colReelHex = document.getElementById('colorReel').value;
+      const labelObjName = document.getElementById('labelObjectif').value.trim() || 'Objectif';
+      const labelReelName = document.getElementById('labelReel').value.trim() || 'Réel';
+      const urlLink = document.getElementById('urlField').value.trim();
       if (!name || labels.length === 0 || dataObjectif.length !== labels.length || dataReel.length !== labels.length) {
         alert('Veuillez remplir correctement tous les champs.');
         return;
       }
+      // Build datasets with chosen colours, adapting for chart types
+      const datasetObj = {};
+      const datasetReel = {};
+      if (type === 'bar' || type === 'line' || type === 'radar' || type === 'gauge') {
+        // For bar/line/radar/gauge, use consistent colours
+        if (type === 'bar') {
+          datasetObj.backgroundColor = hexToRgba(colObjHex, 0.5);
+          datasetObj.borderColor = hexToRgba(colObjHex, 1);
+          datasetObj.borderWidth = 1;
+          datasetReel.backgroundColor = hexToRgba(colReelHex, 0.5);
+          datasetReel.borderColor = hexToRgba(colReelHex, 1);
+          datasetReel.borderWidth = 1;
+        } else if (type === 'line' || type === 'radar' || type === 'gauge') {
+          datasetObj.borderColor = hexToRgba(colObjHex, 1);
+          datasetObj.backgroundColor = hexToRgba(colObjHex, 0.2);
+          datasetReel.borderColor = hexToRgba(colReelHex, 1);
+          datasetReel.backgroundColor = hexToRgba(colReelHex, 0.2);
+          // tension property only applies to line charts
+          if (type === 'line') {
+            datasetObj.tension = 0.3;
+            datasetReel.tension = 0.3;
+          }
+        }
+      } else if (type === 'pie' || type === 'doughnut') {
+        // For pie/doughnut charts, assign per-segment colours
+        const objBg = hexToRgba(colObjHex, 0.6);
+        const objBorder = hexToRgba(colObjHex, 1);
+        const reelBg = hexToRgba(colReelHex, 0.6);
+        const reelBorder = hexToRgba(colReelHex, 1);
+        datasetObj.backgroundColor = labels.map(() => objBg);
+        datasetObj.borderColor = labels.map(() => objBorder);
+        datasetObj.borderWidth = 1;
+        datasetReel.backgroundColor = labels.map(() => reelBg);
+        datasetReel.borderColor = labels.map(() => reelBorder);
+        datasetReel.borderWidth = 1;
+      }
+      datasetObj.label = labelObjName;
+      datasetObj.data = dataObjectif;
+      datasetReel.label = labelReelName;
+      datasetReel.data = dataReel;
       const category = {
         name,
         type,
         labels,
-        datasets: [
-          {
-            label: 'Objectif',
-            data: dataObjectif,
-            backgroundColor: type === 'bar' ? 'rgba(0, 204, 102, 0.5)' : undefined,
-            borderColor: type === 'bar' ? 'rgba(0, 204, 102, 1)' : 'rgba(0, 204, 102, 1)',
-            borderWidth: 1,
-            tension: type === 'line' ? 0.3 : undefined
-          },
-          {
-            label: 'Réel',
-            data: dataReel,
-            backgroundColor: type === 'bar' ? 'rgba(255, 99, 132, 0.5)' : undefined,
-            borderColor: type === 'bar' ? 'rgba(255, 99, 132, 1)' : 'rgba(255, 99, 132, 1)',
-            borderWidth: 1,
-            tension: type === 'line' ? 0.3 : undefined
-          }
-        ]
+        datasets: [datasetObj, datasetReel],
+        url: urlLink
       };
       const data = loadDashboardData();
       const editIndex = document.getElementById('editIndex').value;
@@ -216,6 +294,27 @@
       document.getElementById('dataObjectif').value = cat.datasets[0].data.join(', ');
       document.getElementById('dataReel').value = cat.datasets[1].data.join(', ');
       document.getElementById('editIndex').value = index;
+      // Set series names
+      document.getElementById('labelObjectif').value = cat.datasets[0].label || 'Objectif';
+      document.getElementById('labelReel').value = cat.datasets[1].label || 'Réel';
+      // URL link
+      document.getElementById('urlField').value = cat.url || '';
+      // Pre-fill colour pickers by converting RGBA to hex (use first colour if array)
+      try {
+        let couleurObj = cat.datasets[0].borderColor || cat.datasets[0].backgroundColor;
+        let couleurReel = cat.datasets[1].borderColor || cat.datasets[1].backgroundColor;
+        // In case of pie/doughnut arrays, use first entry
+        if (Array.isArray(couleurObj)) {
+          couleurObj = couleurObj[0];
+        }
+        if (Array.isArray(couleurReel)) {
+          couleurReel = couleurReel[0];
+        }
+        document.getElementById('colorObjectif').value = rgbaToHex(couleurObj);
+        document.getElementById('colorReel').value = rgbaToHex(couleurReel);
+      } catch (e) {
+        console.warn('Impossible de charger les couleurs', e);
+      }
     }
     // Delete category
     function deleteCategory(index) {
@@ -233,9 +332,38 @@
       document.getElementById('dataObjectif').value = '';
       document.getElementById('dataReel').value = '';
       document.getElementById('editIndex').value = '';
+      document.getElementById('labelObjectif').value = '';
+      document.getElementById('labelReel').value = '';
+      document.getElementById('urlField').value = '';
     }
     // Initialize
-    document.addEventListener('DOMContentLoaded', renderCategoryList);
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCategoryList();
+      // Load theme colours into pickers
+      try {
+        const theme = JSON.parse(localStorage.getItem('theme'));
+        if (theme) {
+          document.getElementById('bgColor').value = theme['bg-color'] || '#253746';
+          document.getElementById('headerBg').value = theme['header-bg'] || '#142d48';
+          document.getElementById('cardBg').value = theme['card-bg'] || '#1f3a55';
+          document.getElementById('accentColor').value = theme['accent-color'] || '#007bff';
+        }
+      } catch (e) {
+        console.error('Erreur lors du chargement du thème', e);
+      }
+    });
+
+    // Save theme colours
+    document.getElementById('saveThemeBtn').addEventListener('click', () => {
+      const theme = {
+        'bg-color': document.getElementById('bgColor').value,
+        'header-bg': document.getElementById('headerBg').value,
+        'card-bg': document.getElementById('cardBg').value,
+        'accent-color': document.getElementById('accentColor').value
+      };
+      localStorage.setItem('theme', JSON.stringify(theme));
+      alert('Thème enregistré ! Rafraîchissez le tableau pour appliquer les couleurs.');
+    });
   </script>
 </body>
 </html>
