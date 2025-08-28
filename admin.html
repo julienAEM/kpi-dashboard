@@ -131,6 +131,10 @@
     <label for="urlField">Lien URL (facultatif)</label>
     <input type="text" id="urlField" placeholder="https://exemple.com" />
 
+    <!-- Threshold input -->
+    <label for="thresholdField">Seuil d'alerte (%) (optionnel)</label>
+    <input type="number" id="thresholdField" placeholder="80" min="0" max="100" />
+
     <!-- Colour pickers for datasets -->
     <label for="colorObjectif">Couleur Objectif</label>
     <input type="color" id="colorObjectif" value="#00cc66" />
@@ -150,6 +154,12 @@
     <label for="accentColor">Couleur d'accent</label>
     <input type="color" id="accentColor" value="#007bff" />
     <button class="btn btn-save" id="saveThemeBtn">Sauvegarder le thème</button>
+
+    <!-- Data import section -->
+    <h2>Importer des catégories</h2>
+    <p>Vous pouvez importer un fichier JSON contenant un tableau d'objets {categories: [...]} pour ajouter plusieurs indicateurs d'un coup.</p>
+    <input type="file" id="importFile" accept=".json" />
+    <button class="btn btn-save" id="importBtn">Importer</button>
     <h2>Catégories existantes</h2>
     <div class="category-list" id="categoryList"></div>
   </div>
@@ -222,6 +232,8 @@
       const labelObjName = document.getElementById('labelObjectif').value.trim() || 'Objectif';
       const labelReelName = document.getElementById('labelReel').value.trim() || 'Réel';
       const urlLink = document.getElementById('urlField').value.trim();
+      const thresholdValueRaw = document.getElementById('thresholdField').value.trim();
+      const thresholdValue = thresholdValueRaw ? parseFloat(thresholdValueRaw) : null;
       if (!name || labels.length === 0 || dataObjectif.length !== labels.length || dataReel.length !== labels.length) {
         alert('Veuillez remplir correctement tous les champs.');
         return;
@@ -271,7 +283,8 @@
         type,
         labels,
         datasets: [datasetObj, datasetReel],
-        url: urlLink
+        url: urlLink,
+        threshold: thresholdValue
       };
       const data = loadDashboardData();
       const editIndex = document.getElementById('editIndex').value;
@@ -299,6 +312,8 @@
       document.getElementById('labelReel').value = cat.datasets[1].label || 'Réel';
       // URL link
       document.getElementById('urlField').value = cat.url || '';
+      // Threshold
+      document.getElementById('thresholdField').value = (cat.threshold !== undefined && cat.threshold !== null) ? cat.threshold : '';
       // Pre-fill colour pickers by converting RGBA to hex (use first colour if array)
       try {
         let couleurObj = cat.datasets[0].borderColor || cat.datasets[0].backgroundColor;
@@ -363,6 +378,35 @@
       };
       localStorage.setItem('theme', JSON.stringify(theme));
       alert('Thème enregistré ! Rafraîchissez le tableau pour appliquer les couleurs.');
+    });
+
+    // Import categories from JSON file
+    document.getElementById('importBtn').addEventListener('click', () => {
+      const fileInput = document.getElementById('importFile');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Veuillez sélectionner un fichier JSON.');
+        return;
+      }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.categories)) {
+            const data = loadDashboardData();
+            data.categories = data.categories.concat(imported.categories);
+            saveDashboardData(data);
+            renderCategoryList();
+            alert('Importation réussie.');
+            fileInput.value = '';
+          } else {
+            alert('Le fichier JSON doit contenir un objet avec une propriété "categories" en tableau.');
+          }
+        } catch (err) {
+          alert('Erreur de lecture du fichier : ' + err.message);
+        }
+      };
+      reader.readAsText(file);
     });
   </script>
 </body>
