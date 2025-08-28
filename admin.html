@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administration du tableau OPS</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #0c3c60;
+      color: #fff;
+    }
+    header {
+      padding: 20px;
+      text-align: center;
+      background-color: #0b3150;
+      border-bottom: 2px solid #11517e;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    textarea {
+      height: 60px;
+    }
+    .btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-save {
+      background-color: #00bfff;
+      color: #000;
+    }
+    .btn-delete {
+      background-color: #e74c3c;
+      color: #fff;
+    }
+    .category-list {
+      margin-top: 20px;
+    }
+    .category-item {
+      background-color: #0b3150;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .category-item button {
+      margin-left: 10px;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .category-item .edit-btn {
+      background-color: #f1c40f;
+      color: #000;
+    }
+    .category-item .delete-btn {
+      background-color: #e74c3c;
+      color: #fff;
+    }
+    .back-link {
+      padding: 20px;
+      text-align: right;
+    }
+    .back-link a {
+      color: #00bfff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Administration du tableau OPS</h1>
+  </header>
+  <div class="back-link">
+    <a href="index.html">← Retour au tableau</a>
+  </div>
+  <div class="container">
+    <h2>Ajouter ou modifier une catégorie</h2>
+    <label for="name">Nom de la catégorie</label>
+    <input type="text" id="name" />
+    <label for="type">Type de graphique</label>
+    <select id="type">
+      <option value="bar">Barres</option>
+      <option value="line">Lignes</option>
+    </select>
+    <label for="labels">Libellés (séparés par des virgules)</label>
+    <input type="text" id="labels" placeholder="Sept, Oct, Nov, Déc" />
+    <label for="dataObjectif">Données Objectif (séparées par des virgules)</label>
+    <input type="text" id="dataObjectif" placeholder="80, 80, 80, 80" />
+    <label for="dataReel">Données Réel (séparées par des virgules)</label>
+    <input type="text" id="dataReel" placeholder="75, 70, 78, 85" />
+    <button class="btn btn-save" id="saveBtn">Sauvegarder</button>
+    <input type="hidden" id="editIndex" value="" />
+    <h2>Catégories existantes</h2>
+    <div class="category-list" id="categoryList"></div>
+  </div>
+  <script>
+    // Functions to load and save data
+    function loadDashboardData() {
+      const stored = localStorage.getItem('dashboardData');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.error('Erreur de parsing des données enregistrées', e);
+        }
+      }
+      return { categories: [] };
+    }
+    function saveDashboardData(data) {
+      localStorage.setItem('dashboardData', JSON.stringify(data));
+    }
+    // Render list of categories
+    function renderCategoryList() {
+      const data = loadDashboardData();
+      const listDiv = document.getElementById('categoryList');
+      listDiv.innerHTML = '';
+      data.categories.forEach((cat, index) => {
+        const item = document.createElement('div');
+        item.className = 'category-item';
+        item.innerHTML = `<span>${cat.name}</span>`;
+        const actions = document.createElement('div');
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.textContent = 'Modifier';
+        editBtn.onclick = () => editCategory(index);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = 'Supprimer';
+        deleteBtn.onclick = () => deleteCategory(index);
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+        item.appendChild(actions);
+        listDiv.appendChild(item);
+      });
+    }
+    // Add or update category
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const name = document.getElementById('name').value.trim();
+      const type = document.getElementById('type').value;
+      const labels = document.getElementById('labels').value.split(',').map(s => s.trim()).filter(Boolean);
+      const dataObjectif = document.getElementById('dataObjectif').value.split(',').map(s => parseFloat(s.trim()));
+      const dataReel = document.getElementById('dataReel').value.split(',').map(s => parseFloat(s.trim()));
+      if (!name || labels.length === 0 || dataObjectif.length !== labels.length || dataReel.length !== labels.length) {
+        alert('Veuillez remplir correctement tous les champs.');
+        return;
+      }
+      const category = {
+        name,
+        type,
+        labels,
+        datasets: [
+          {
+            label: 'Objectif',
+            data: dataObjectif,
+            backgroundColor: type === 'bar' ? 'rgba(0, 204, 102, 0.5)' : undefined,
+            borderColor: type === 'bar' ? 'rgba(0, 204, 102, 1)' : 'rgba(0, 204, 102, 1)',
+            borderWidth: 1,
+            tension: type === 'line' ? 0.3 : undefined
+          },
+          {
+            label: 'Réel',
+            data: dataReel,
+            backgroundColor: type === 'bar' ? 'rgba(255, 99, 132, 0.5)' : undefined,
+            borderColor: type === 'bar' ? 'rgba(255, 99, 132, 1)' : 'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+            tension: type === 'line' ? 0.3 : undefined
+          }
+        ]
+      };
+      const data = loadDashboardData();
+      const editIndex = document.getElementById('editIndex').value;
+      if (editIndex === '') {
+        data.categories.push(category);
+      } else {
+        data.categories[parseInt(editIndex)] = category;
+      }
+      saveDashboardData(data);
+      clearForm();
+      renderCategoryList();
+    });
+    // Edit category
+    function editCategory(index) {
+      const data = loadDashboardData();
+      const cat = data.categories[index];
+      document.getElementById('name').value = cat.name;
+      document.getElementById('type').value = cat.type;
+      document.getElementById('labels').value = cat.labels.join(', ');
+      document.getElementById('dataObjectif').value = cat.datasets[0].data.join(', ');
+      document.getElementById('dataReel').value = cat.datasets[1].data.join(', ');
+      document.getElementById('editIndex').value = index;
+    }
+    // Delete category
+    function deleteCategory(index) {
+      if (!confirm('Supprimer cette catégorie ?')) return;
+      const data = loadDashboardData();
+      data.categories.splice(index, 1);
+      saveDashboardData(data);
+      renderCategoryList();
+    }
+    // Clear form after saving
+    function clearForm() {
+      document.getElementById('name').value = '';
+      document.getElementById('type').value = 'bar';
+      document.getElementById('labels').value = '';
+      document.getElementById('dataObjectif').value = '';
+      document.getElementById('dataReel').value = '';
+      document.getElementById('editIndex').value = '';
+    }
+    // Initialize
+    document.addEventListener('DOMContentLoaded', renderCategoryList);
+  </script>
+</body>
+</html>
