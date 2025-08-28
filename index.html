@@ -62,6 +62,9 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      /* Ensure each card fills its grid cell so that the overall layout can adapt
+         to the viewport height. */
+      height: 100%;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
     .card h2 {
@@ -71,7 +74,10 @@
     }
     .chart-container {
       position: relative;
-      height: 260px; /* adjust chart height for readability and gauge control */
+      /* Let the chart container expand to fill available vertical space
+         within the card; the actual height will be controlled by the grid layout. */
+      flex: 1 1 auto;
+      height: auto;
     }
     /* Increase font sizes and card dimensions on very large screens (e.g. 85'' TV) */
     @media screen and (min-width: 1600px) {
@@ -81,11 +87,10 @@
       .card h2 {
         font-size: 24px;
       }
-      .chart-container {
-        height: 330px;
-      }
+      /* For very large screens, we rely on JavaScript to compute an appropriate grid layout.
+         Keep the chart container flexible; the script will adjust row heights. */
       .container {
-        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        /* The number of columns will be dynamically calculated in renderDashboard(). */
       }
     }
   </style>
@@ -266,7 +271,30 @@
     function renderDashboard() {
       const container = document.getElementById('dashboardContainer');
       container.innerHTML = '';
+      // Compute dynamic grid layout so that all cards fit within the viewport height.
+      const headerEl = document.querySelector('header');
+      const adminLinkEl = document.querySelector('.admin-link');
+      const headerHeight = (headerEl ? headerEl.offsetHeight : 0) + (adminLinkEl ? adminLinkEl.offsetHeight : 0);
+      // Available vertical space for the dashboard (subtract a small margin for padding)
+      const availableHeight = window.innerHeight - headerHeight - 40;
+      // Determine how many columns can fit based on a minimum card width (approx. 450px + gap)
+      const minCardWidth = 450;
+      const gapSize = 20;
+      const containerWidth = window.innerWidth - 40; // account for padding/margin
+      let columns = Math.floor((containerWidth + gapSize) / (minCardWidth + gapSize));
+      if (columns < 1) columns = 1;
       const data = loadDashboardData();
+      const categoriesCount = data.categories.length;
+      // Limit columns to the number of categories
+      columns = Math.min(columns, categoriesCount);
+      const rows = Math.ceil(categoriesCount / columns) || 1;
+      // Apply grid layout dynamically
+      container.style.display = 'grid';
+      container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+      container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+      container.style.gap = `${gapSize}px`;
+      container.style.height = `${availableHeight}px`;
+      // Now iterate over categories to create cards and charts
       data.categories.forEach((cat, index) => {
         // Create card container
         const card = document.createElement('div');
@@ -296,7 +324,8 @@
         const canvas = document.createElement('canvas');
         canvas.id = 'chart-' + index;
         canvas.style.width = '100%';
-        canvas.style.height = '180px';
+        // Let the canvas fill its container; the height will be determined by flex/grid layout.
+        canvas.style.height = '100%';
         const chartWrapper = document.createElement('div');
         chartWrapper.className = 'chart-container';
         chartWrapper.appendChild(canvas);
