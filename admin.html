@@ -6,91 +6,131 @@
   <title>Administration du tableau OPS</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
+    /* Define colour variables to mirror the main dashboard theme. */
+    :root {
+      --bg-color: #253746;
+      --header-bg: #142d48;
+      --card-bg: #1f3a55;
+      --accent-color: #007bff;
+    }
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background-color: #0c3c60;
-      color: #fff;
+      background-color: var(--bg-color);
+      color: #ffffff;
     }
     header {
       padding: 20px;
       text-align: center;
-      background-color: #0b3150;
-      border-bottom: 2px solid #11517e;
+      background-color: var(--header-bg);
+      border-bottom: 2px solid var(--accent-color);
     }
     header h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 28px;
     }
     .container {
+      max-width: 600px;
+      margin: 20px auto;
       padding: 20px;
-      max-width: 800px;
-      margin: auto;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    h2 {
+      text-align: center;
+      margin-top: 30px;
     }
     label {
       display: block;
-      margin-top: 10px;
+      margin-top: 12px;
+      font-weight: bold;
     }
-    input[type="text"], select, textarea {
+    input[type="text"], input[type="number"], select, textarea, input[type="color"] {
       width: 100%;
       padding: 8px;
-      margin-top: 5px;
+      margin-top: 6px;
       box-sizing: border-box;
       border-radius: 4px;
       border: 1px solid #ccc;
+      background-color: #ffffff;
+      color: #000;
     }
     textarea {
       height: 60px;
+      resize: vertical;
     }
+    /* Base button styling */
     .btn {
-      margin-top: 15px;
+      margin-top: 20px;
       padding: 10px 20px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
     }
     .btn-save {
-      background-color: #00bfff;
-      color: #000;
+      background-color: var(--accent-color);
+      color: #fff;
+    }
+    .btn-save:hover {
+      background-color: #0056b3;
     }
     .btn-delete {
       background-color: #e74c3c;
       color: #fff;
     }
+    .btn-delete:hover {
+      background-color: #c0392b;
+    }
     .category-list {
-      margin-top: 20px;
+      margin-top: 30px;
     }
     .category-item {
-      background-color: #0b3150;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 4px;
+      background-color: var(--header-bg);
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     .category-item button {
       margin-left: 10px;
       border: none;
-      padding: 5px 10px;
-      border-radius: 3px;
+      padding: 6px 12px;
+      border-radius: 4px;
       cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
     }
     .category-item .edit-btn {
       background-color: #f1c40f;
       color: #000;
     }
+    .category-item .edit-btn:hover {
+      background-color: #d4ac0d;
+    }
     .category-item .delete-btn {
       background-color: #e74c3c;
       color: #fff;
+    }
+    .category-item .delete-btn:hover {
+      background-color: #c0392b;
     }
     .back-link {
       padding: 20px;
       text-align: right;
     }
     .back-link a {
-      color: #00bfff;
+      color: var(--accent-color);
       text-decoration: none;
+      font-weight: bold;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
