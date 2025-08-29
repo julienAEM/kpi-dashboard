@@ -135,15 +135,28 @@
       flex-direction: column;
       margin-bottom: 30px;
     }
+    /* Navigation links with icons. Each link has a flex layout with gap for the icon.
+       Use subtle background highlighting on hover and an active state. */
     .sidebar .nav a {
       color: #ffffff;
       text-decoration: none;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
       font-size: 14px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
     .sidebar .nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
       color: var(--accent-color);
+    }
+    .sidebar .nav a.active {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: var(--accent-color);
+      font-weight: bold;
     }
     .sidebar .filters {
       margin-top: auto;
@@ -181,21 +194,32 @@
     }
     .main-header {
       padding: 20px;
-      display: flex;
-      justify-content: space-between;
+      /* Use a grid to center the title and position the admin link on the right. */
+      display: grid;
+      grid-template-columns: 1fr auto;
       align-items: center;
       background-color: var(--header-bg);
       border-bottom: 2px solid var(--accent-color);
     }
     .main-header h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 32px;
       color: #ffffff;
+      text-align: center;
     }
     .main-header a {
       color: var(--accent-color);
       text-decoration: none;
       font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .main-header a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
     }
     /* Container for the dashboard cards inside main-content */
     .dashboard-container {
@@ -233,9 +257,9 @@
         <span style="font-size:16px; font-weight:bold; color:#ffffff;">AEM</span>
       </div>
       <div class="nav">
-        <a href="#">Dashboard</a>
-        <a href="#">Plan</a>
-        <a href="#">Fait</a>
+        <a href="#" class="active"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+        <a href="#"><i class="fa fa-calendar-alt"></i> Plan</a>
+        <a href="#"><i class="fa fa-check-circle"></i> Fait</a>
       </div>
       <div class="filters">
         <h3>Filtres</h3>
