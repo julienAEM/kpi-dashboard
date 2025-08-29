@@ -160,10 +160,16 @@
       color: #ffffff;
     }
     .main-content {
+      /* Make the main content fill the viewport height and prevent internal scrolling.
+         The header and dashboard grid will be laid out within this space so that
+         the entire dashboard fits on a single screen without requiring the user
+         to scroll the page. */
       flex: 1;
       display: flex;
       flex-direction: column;
       background-color: var(--bg-color);
+      height: 100vh;
+      overflow: hidden;
     }
     .main-header {
       padding: 20px;
@@ -188,6 +194,10 @@
       flex: 1;
       position: relative;
       overflow: hidden;
+      /* Fill available height so that the grid will expand to the height of
+         .main-content. This helps keep all dashboard cards visible on a
+         single screen. */
+      height: 100%;
     }
 
     /* Increase font sizes and card dimensions on very large screens (e.g. 85'' TV) */
