@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fait - OPS Plan 3 mois</title>
+  <!-- Font Awesome and Chart.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-yIKBs6ywmUDbPsf3zHa72FYz8aXTv/jvKgV34KNTxM/Z7mOs6OGCZIiq5lDn8MULy7z6ozqHicw4P93apElnfw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #253746;
+      --header-bg: #142d48;
+      --card-bg: #1f3a55;
+      --accent-color: #007bff;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: var(--bg-color);
+      color: #fff;
+    }
+    .layout {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 240px;
+      background-color: #0b3150;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .sidebar .logo-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .sidebar .logo-container img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    .sidebar .nav {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 30px;
+    }
+    .sidebar .nav a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .sidebar .nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--accent-color);
+    }
+    .sidebar .nav a.active {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+    .sidebar label {
+      font-size: 12px;
+      margin-top: 10px;
+      display: block;
+    }
+    .sidebar select {
+      width: 100%;
+      padding: 6px;
+      border-radius: 4px;
+      border: none;
+      margin-top: 4px;
+      background-color: #1f3a55;
+      color: #ffffff;
+    }
+    .filter-btn {
+      margin-top: 12px;
+      padding: 8px 12px;
+      width: 100%;
+      background-color: var(--accent-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    .filter-btn:hover {
+      background-color: #0056b3;
+    }
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-color);
+      height: 100vh;
+      overflow: hidden;
+    }
+    .main-header {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      background-color: var(--header-bg);
+      border-bottom: 2px solid var(--accent-color);
+    }
+    .main-header h1 {
+      margin: 0;
+      font-size: 32px;
+      color: #ffffff;
+      text-align: center;
+    }
+    .main-header a {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .main-header a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .dashboard-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--accent-color);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .card h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: var(--accent-color);
+      text-align: center;
+    }
+    .action-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--accent-color);
+      cursor: pointer;
+      margin-left: 8px;
+      font-size: 16px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .action-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .comment-display {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #cccccc;
+      white-space: pre-wrap;
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="logo.png" alt="Logo AEM">
+        <span style="font-size:16px; font-weight:bold; color:#ffffff;">AEM</span>
+      </div>
+      <div class="nav">
+        <a href="index.html"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+        <a href="plan.html"><i class="fa fa-calendar-alt"></i> Plan</a>
+        <a href="fait.html" class="active"><i class="fa fa-check-circle"></i> Fait</a>
+      </div>
+      <div class="filters">
+        <h3>Filtres</h3>
+        <label for="quarterSelect">Trimestre</label>
+        <select id="quarterSelect">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+        <label for="monthSelect">Mois</label>
+        <select id="monthSelect">
+          <option value="Sept">Sept</option>
+          <option value="Oct">Oct</option>
+          <option value="Nov">Nov</option>
+          <option value="Déc">Déc</option>
+        </select>
+        <button id="applyFilterBtn" class="filter-btn">Appliquer le filtre</button>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <h1>Fait - OPS Plan 3 mois (septembre à décembre)</h1>
+        <a href="admin.html"><i class="fa fa-edit"></i> Mode Admin</a>
+      </div>
+      <div class="dashboard-container" id="dashboardContainer"></div>
+    </main>
+  </div>
+  <script>
+    const defaultData = JSON.parse(localStorage.getItem('dashboardData') || '{}').categories ? {} : { categories: [] };
+    function loadDashboardData() {
+      try {
+        return JSON.parse(localStorage.getItem('dashboardData')) || defaultData;
+      } catch (e) {
+        return defaultData;
+      }
+    }
+    function saveComment(index, text) {
+      const comments = JSON.parse(localStorage.getItem('comments') || '{}');
+      if (text && text.trim() !== '') {
+        comments[index] = text;
+      } else {
+        delete comments[index];
+      }
+      localStorage.setItem('comments', JSON.stringify(comments));
+    }
+    function loadComment(index) {
+      const comments = JSON.parse(localStorage.getItem('comments') || '{}');
+      return comments[index] || '';
+    }
+    function applyTheme() {
+      const theme = JSON.parse(localStorage.getItem('theme')) || {};
+      const root = document.documentElement;
+      ['bg-color', 'header-bg', 'card-bg', 'accent-color'].forEach(key => {
+        if (theme[key]) {
+          root.style.setProperty(`--${key}`, theme[key]);
+        }
+      });
+    }
+    function renderDashboard() {
+      const container = document.getElementById('dashboardContainer');
+      container.innerHTML = '';
+      const headerEl = document.querySelector('.main-header');
+      const headerHeight = headerEl ? headerEl.offsetHeight : 0;
+      const availableHeight = window.innerHeight - headerHeight - 40;
+      const sidebarEl = document.querySelector('.sidebar');
+      const containerWidth = window.innerWidth - (sidebarEl ? sidebarEl.offsetWidth : 0) - 40;
+      const minCardWidth = 450;
+      const gapSize = 20;
+      let columns = Math.floor((containerWidth + gapSize) / (minCardWidth + gapSize));
+      if (columns < 1) columns = 1;
+      const data = loadDashboardData();
+      const categories = (data.categories || []).filter(cat => (cat.status || 'plan') === 'fait');
+      const count = categories.length;
+      columns = Math.min(columns, count);
+      const rows = Math.ceil(count / columns) || 1;
+      container.style.display = 'grid';
+      container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+      container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+      container.style.gap = `${gapSize}px`;
+      container.style.height = `${availableHeight}px`;
+      categories.forEach((cat, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const titleWrapper = document.createElement('div');
+        titleWrapper.style.display = 'flex';
+        titleWrapper.style.justifyContent = 'space-between';
+        titleWrapper.style.alignItems = 'center';
+        const title = document.createElement('h2');
+        title.textContent = cat.name;
+        titleWrapper.appendChild(title);
+        if (cat.url && cat.url.trim() !== '') {
+          const link = document.createElement('a');
+          link.href = cat.url;
+          link.target = '_blank';
+          link.title = 'Ouvrir le lien dans un nouvel onglet';
+          link.style.color = 'var(--accent-color)';
+          link.style.marginLeft = '10px';
+          link.innerHTML = '<i class="fa fa-link"></i>';
+          titleWrapper.appendChild(link);
+        }
+        if (typeof cat.threshold === 'number' && !isNaN(cat.threshold)) {
+          const sumObj = cat.datasets[0].data.reduce((a, b) => a + b, 0);
+          const sumReel = cat.datasets[1].data.reduce((a, b) => a + b, 0);
+          const ratioPct = sumObj > 0 ? (sumReel / sumObj) * 100 : 0;
+          const indicator = document.createElement('span');
+          indicator.style.marginLeft = '10px';
+          if (ratioPct >= cat.threshold) {
+            indicator.innerHTML = '<i class="fa fa-arrow-up" style="color:#00cc66;"></i>';
+          } else {
+            indicator.innerHTML = '<i class="fa fa-arrow-down" style="color:#e74c3c;"></i>';
+          }
+          titleWrapper.appendChild(indicator);
+        }
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'action-btn';
+        exportBtn.title = 'Exporter le graphique';
+        exportBtn.innerHTML = '<i class="fa fa-download"></i>';
+        exportBtn.onclick = (e) => {
+          e.stopPropagation();
+          downloadChart(index);
+        };
+        titleWrapper.appendChild(exportBtn);
+        const commentBtn = document.createElement('button');
+        commentBtn.className = 'action-btn';
+        commentBtn.title = 'Ajouter ou modifier un commentaire';
+        commentBtn.innerHTML = '<i class="fa fa-comment"></i>';
+        commentBtn.onclick = (e) => {
+          e.stopPropagation();
+          const existing = loadComment(index);
+          const newCom = prompt('Entrer un commentaire pour "' + cat.name + '" :', existing || '');
+          if (newCom !== null) {
+            saveComment(index, newCom.trim());
+            renderDashboard();
+          }
+        };
+        titleWrapper.appendChild(commentBtn);
+        card.appendChild(titleWrapper);
+        const canvas = document.createElement('canvas');
+        canvas.id = 'chart-' + index;
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        const chartWrapper = document.createElement('div');
+        chartWrapper.className = 'chart-container';
+        chartWrapper.appendChild(canvas);
+        card.appendChild(chartWrapper);
+        const commentText = loadComment(index);
+        if (commentText) {
+          const commentDiv = document.createElement('div');
+          commentDiv.className = 'comment-display';
+          const commentSpan = document.createElement('span');
+          commentSpan.textContent = 'Commentaire : ' + commentText;
+          commentDiv.appendChild(commentSpan);
+          const delBtn = document.createElement('button');
+          delBtn.className = 'action-btn';
+          delBtn.style.marginLeft = '8px';
+          delBtn.title = 'Supprimer le commentaire';
+          delBtn.innerHTML = '<i class="fa fa-trash"></i>';
+          delBtn.onclick = (ev) => {
+            ev.stopPropagation();
+            if (confirm('Supprimer ce commentaire ?')) {
+              saveComment(index, '');
+              renderDashboard();
+            }
+          };
+          commentDiv.appendChild(delBtn);
+          card.appendChild(commentDiv);
+        }
+        container.appendChild(card);
+        const ctx = canvas.getContext('2d');
+        let chartConfig;
+        if (cat.type === 'gauge') {
+          const sumObjectif = cat.datasets[0].data.reduce((a, b) => a + b, 0);
+          const sumReel = cat.datasets[1].data.reduce((a, b) => a + b, 0);
+          const ratio = sumObjectif > 0 ? Math.min(Math.max((sumReel / sumObjectif) * 100, 0), 100) : 0;
+          const colourActual = cat.datasets[1].borderColor || cat.datasets[1].backgroundColor || 'rgba(0, 204, 102, 1)';
+          let remainderColour = getComputedStyle(document.documentElement).getPropertyValue('--card-bg') || '#1f3a55';
+          remainderColour = remainderColour.trim();
+          chartConfig = {
+            type: 'doughnut',
+            data: { labels: ['Réel', 'Manquant'], datasets: [{ data: [ratio, 100 - ratio], backgroundColor: [colourActual, remainderColour], borderColor: [colourActual, remainderColour], borderWidth: 1 }] },
+            options: { rotation: -90, circumference: 180, cutout: '70%', plugins: { legend: { display: false }, tooltip: { enabled: false }, title: { display: true, text: ratio.toFixed(0) + '%', color: colourActual, position: 'bottom', font: { size: 24, weight: 'bold' } } } }
+          };
+        } else {
+          chartConfig = {
+            type: cat.type === 'gauge' ? 'doughnut' : cat.type,
+            data: { labels: cat.labels, datasets: cat.datasets },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: '#ffffff' } }, tooltip: { bodyColor: '#000', titleColor: '#000' } }, scales: { x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(255,255,255,0.1)' } }, y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(255,255,255,0.1)' } } } }
+          };
+        }
+        const chartInstance = new Chart(ctx, chartConfig);
+        if (typeof chartInstance.resize === 'function') {
+          chartInstance.resize();
+        }
+        const table = document.createElement('table');
+        table.style.marginTop = '10px';
+        table.style.width = '100%';
+        table.style.fontSize = '12px';
+        table.style.borderCollapse = 'collapse';
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        ['Libellé', cat.datasets[0].label || 'Objectif', cat.datasets[1].label || 'Réel'].forEach(text => {
+          const th = document.createElement('th');
+          th.textContent = text;
+          th.style.borderBottom = '1px solid rgba(255,255,255,0.2)';
+          th.style.padding = '4px';
+          headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        cat.labels.forEach((lbl, idx) => {
+          const tr = document.createElement('tr');
+          const tdLabel = document.createElement('td');
+          tdLabel.textContent = lbl;
+          tdLabel.style.padding = '4px';
+          const tdObj = document.createElement('td');
+          tdObj.textContent = cat.datasets[0].data[idx];
+          tdObj.style.padding = '4px';
+          const tdReel = document.createElement('td');
+          tdReel.textContent = cat.datasets[1].data[idx];
+          tdReel.style.padding = '4px';
+          tr.appendChild(tdLabel);
+          tr.appendChild(tdObj);
+          tr.appendChild(tdReel);
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        card.appendChild(table);
+      });
+    }
+    function downloadChart(idx) {
+      const canvas = document.getElementById('chart-' + idx);
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = 'chart-' + idx + '.png';
+      link.click();
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      renderDashboard();
+      const btn = document.getElementById('applyFilterBtn');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          renderDashboard();
+        });
+      }
+    });
+  </script>
+</body>
+</html>
