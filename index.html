@@ -71,16 +71,24 @@
       font-size: 20px;
       margin-bottom: 15px;
       color: var(--accent-color);
+      text-align: center;
     }
 
     /* Action buttons (comment, export) */
     .action-btn {
-      background: none;
+      background: rgba(255, 255, 255, 0.1);
       border: none;
       color: var(--accent-color);
       cursor: pointer;
       margin-left: 8px;
       font-size: 16px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    .action-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
     }
 
     /* Display for saved comment */
