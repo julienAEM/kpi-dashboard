@@ -420,6 +420,25 @@
       } catch (e) {
         console.error('Erreur lors du chargement du thème', e);
       }
+
+      // Parse URL parameters for status or edit index.
+      const params = new URLSearchParams(window.location.search);
+      const statusParam = params.get('status');
+      const editParam = params.get('edit');
+      // If status is provided, preset the status dropdown
+      if (statusParam) {
+        const statField = document.getElementById('statusField');
+        if (statField) {
+          statField.value = statusParam;
+        }
+      }
+      // If edit parameter provided, load the category for editing
+      if (editParam !== null) {
+        const idx = parseInt(editParam);
+        if (!isNaN(idx)) {
+          loadCategoryForEdit(idx);
+        }
+      }
     });
 
     // Save theme colours
