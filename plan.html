@@ -193,8 +193,10 @@
       </div>
       <div class="nav">
         <a href="index.html"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
-        <a href="plan.html" class="active"><i class="fa fa-calendar-alt"></i> Plan</a>
-        <a href="fait.html"><i class="fa fa-check-circle"></i> Fait</a>
+        <!-- Link to the objectives view that filters categories with status "plan" -->
+        <a href="plan.html" class="active"><i class="fa fa-calendar-alt"></i> Objectifs</a>
+        <!-- Link to the view displaying completed actions (status "fait"). -->
+        <a href="fait.html"><i class="fa fa-check-circle"></i> Actions complétées</a>
       </div>
       <div class="filters">
         <h3>Filtres</h3>
@@ -217,7 +219,12 @@
     </aside>
     <main class="main-content">
       <div class="main-header">
-        <h1>Plan - OPS Plan 3 mois (septembre à décembre)</h1>
+        <h1>Objectifs - OPS Plan 3 mois (septembre à décembre)</h1>
+
+        <!-- Button to create a new objective (status plan). Redirects to admin page with status preset to plan -->
+        <button id="addObjectiveBtn" class="filter-btn" style="margin-left:auto; margin-bottom:10px;">
+          <i class="fa fa-plus-circle"></i> Ajouter un objectif
+        </button>
         <a href="admin.html"><i class="fa fa-edit"></i> Mode Admin</a>
       </div>
       <div class="dashboard-container" id="dashboardContainer">
@@ -340,6 +347,33 @@
           }
         };
         titleWrapper.appendChild(commentBtn);
+
+        // Edit category button (redirect to admin with edit index)
+        const editBtn = document.createElement('button');
+        editBtn.className = 'action-btn';
+        editBtn.title = 'Modifier cette catégorie';
+        editBtn.innerHTML = '<i class="fa fa-edit"></i>';
+        editBtn.onclick = (ev) => {
+          ev.stopPropagation();
+          window.location.href = 'admin.html?edit=' + index;
+        };
+        titleWrapper.appendChild(editBtn);
+
+        // Delete category button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn';
+        deleteBtn.title = 'Supprimer cette catégorie';
+        deleteBtn.innerHTML = '<i class="fa fa-trash"></i>';
+        deleteBtn.onclick = (ev) => {
+          ev.stopPropagation();
+          if (confirm('Supprimer cette catégorie ?')) {
+            const stored = JSON.parse(localStorage.getItem('dashboardData') || '[]');
+            stored.splice(index, 1);
+            localStorage.setItem('dashboardData', JSON.stringify(stored));
+            renderDashboard();
+          }
+        };
+        titleWrapper.appendChild(deleteBtn);
         card.appendChild(titleWrapper);
         const canvas = document.createElement('canvas');
         canvas.id = 'chart-' + index;
@@ -458,6 +492,14 @@
     document.addEventListener('DOMContentLoaded', () => {
       applyTheme();
       renderDashboard();
+
+    // Redirect to admin page for adding a new objective.  When clicked, open admin with status preset to 'plan'
+    const addBtn = document.getElementById('addObjectiveBtn');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        window.location.href = 'admin.html?status=plan';
+      });
+    }
       const btn = document.getElementById('applyFilterBtn');
       if (btn) {
         btn.addEventListener('click', () => {
