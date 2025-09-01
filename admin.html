@@ -177,6 +177,13 @@
     <label for="thresholdField">Seuil d'alerte (%) (optionnel)</label>
     <input type="number" id="thresholdField" placeholder="80" min="0" max="100" />
 
+    <!-- Status selector: Plan or Fait -->
+    <label for="statusField">Statut (Plan ou Fait)</label>
+    <select id="statusField">
+      <option value="plan">Plan</option>
+      <option value="fait">Fait</option>
+    </select>
+
     <!-- Colour pickers for datasets -->
     <label for="colorObjectif">Couleur Objectif</label>
     <input type="color" id="colorObjectif" value="#00cc66" />
@@ -276,6 +283,7 @@
       const urlLink = document.getElementById('urlField').value.trim();
       const thresholdValueRaw = document.getElementById('thresholdField').value.trim();
       const thresholdValue = thresholdValueRaw ? parseFloat(thresholdValueRaw) : null;
+      const statusVal = document.getElementById('statusField').value;
       if (!name || labels.length === 0 || dataObjectif.length !== labels.length || dataReel.length !== labels.length) {
         alert('Veuillez remplir correctement tous les champs.');
         return;
@@ -327,6 +335,7 @@
         datasets: [datasetObj, datasetReel],
         url: urlLink,
         threshold: thresholdValue
+        , status: statusVal
       };
       const data = loadDashboardData();
       const editIndex = document.getElementById('editIndex').value;
@@ -356,6 +365,8 @@
       document.getElementById('urlField').value = cat.url || '';
       // Threshold
       document.getElementById('thresholdField').value = (cat.threshold !== undefined && cat.threshold !== null) ? cat.threshold : '';
+      // Status
+      document.getElementById('statusField').value = cat.status || 'plan';
       // Pre-fill colour pickers by converting RGBA to hex (use first colour if array)
       try {
         let couleurObj = cat.datasets[0].borderColor || cat.datasets[0].backgroundColor;
@@ -392,6 +403,7 @@
       document.getElementById('labelObjectif').value = '';
       document.getElementById('labelReel').value = '';
       document.getElementById('urlField').value = '';
+      document.getElementById('statusField').value = 'plan';
     }
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
