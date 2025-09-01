@@ -180,6 +180,23 @@
       background-color: #1f3a55;
       color: #ffffff;
     }
+
+    /* Filter button styling */
+    .filter-btn {
+      margin-top: 12px;
+      padding: 8px 12px;
+      width: 100%;
+      background-color: var(--accent-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    .filter-btn:hover {
+      background-color: #0056b3;
+    }
     .main-content {
       /* Make the main content fill the viewport height and prevent internal scrolling.
          The header and dashboard grid will be laid out within this space so that
@@ -257,9 +274,12 @@
         <span style="font-size:16px; font-weight:bold; color:#ffffff;">AEM</span>
       </div>
       <div class="nav">
-        <a href="#" class="active"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
-        <a href="#"><i class="fa fa-calendar-alt"></i> Plan</a>
-        <a href="#"><i class="fa fa-check-circle"></i> Fait</a>
+        <!-- Link to the dashboard itself (index.html). The "active" class highlights the current page. -->
+        <a href="index.html" class="active"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+        <!-- Link to the plan view that filters categories with status "plan" -->
+        <a href="plan.html"><i class="fa fa-calendar-alt"></i> Plan</a>
+        <!-- Link to the view displaying completed items (status "fait"). -->
+        <a href="fait.html"><i class="fa fa-check-circle"></i> Fait</a>
       </div>
       <div class="filters">
         <h3>Filtres</h3>
@@ -277,6 +297,8 @@
           <option value="Nov">Nov</option>
           <option value="Déc">Déc</option>
         </select>
+        <!-- Apply filter button -->
+        <button id="applyFilterBtn" class="filter-btn">Appliquer le filtre</button>
       </div>
     </aside>
     <main class="main-content">
@@ -579,7 +601,24 @@
         if (commentText) {
           const commentDiv = document.createElement('div');
           commentDiv.className = 'comment-display';
-          commentDiv.textContent = 'Commentaire : ' + commentText;
+          // Create span for comment text
+          const commentSpan = document.createElement('span');
+          commentSpan.textContent = 'Commentaire : ' + commentText;
+          commentDiv.appendChild(commentSpan);
+          // Create delete button for comment
+          const delBtn = document.createElement('button');
+          delBtn.className = 'action-btn';
+          delBtn.style.marginLeft = '8px';
+          delBtn.title = 'Supprimer le commentaire';
+          delBtn.innerHTML = '<i class="fa fa-trash"></i>';
+          delBtn.onclick = (ev) => {
+            ev.stopPropagation();
+            if (confirm('Supprimer ce commentaire ?')) {
+              saveComment(index, '');
+              renderDashboard();
+            }
+          };
+          commentDiv.appendChild(delBtn);
           card.appendChild(commentDiv);
         }
         container.appendChild(card);
@@ -684,7 +723,11 @@
             };
           }
         }
-        new Chart(ctx, chartConfig);
+        const chartInstance = new Chart(ctx, chartConfig);
+        // Force resize to ensure the chart adapts to its container and prevent overlap
+        if (typeof chartInstance.resize === 'function') {
+          chartInstance.resize();
+        }
       });
     }
     
@@ -692,6 +735,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       applyTheme();
       renderDashboard();
+      // Attach filter application
+      const filterBtn = document.getElementById('applyFilterBtn');
+      if (filterBtn) {
+        filterBtn.addEventListener('click', () => {
+          renderDashboard();
+        });
+      }
     });
   </script>
 </body>
