@@ -152,9 +152,10 @@
       gap: 20px;
 
       /* Uniform row heights: each row will be at least the minimum card height
-         and can grow as needed.  This keeps rows aligned even if some cards
-         contain longer comments. */
-      grid-auto-rows: minmax(280px, auto);
+         and can grow as needed.  Reduce the base height to 240 px to make
+         the cards (pillars) more compact while still accommodating longer
+         content when necessary. */
+      grid-auto-rows: minmax(240px, auto);
 
       /* Center the row contents: when there are fewer cards in a row, they
          appear centered rather than flush left. */
@@ -169,8 +170,9 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      /* Decrease minimum card height to allow more room for comments below charts. */
-      min-height: 280px;
+      /* Reduce the minimum card height further so that pillars occupy less
+         vertical space and leave more room for comments and other UI elements. */
+      min-height: 240px;
       height: auto;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -208,9 +210,10 @@
       align-items: center;
     }
 
-    /* Fix the height of each chart container to avoid overlap between cards. */
+    /* Fix the height of each chart container to avoid overlap between cards
+       while making charts a bit shorter to create space for comments. */
     .chart-container {
-      height: 180px;
+      height: 150px;
     }
   </style>
 </head>
@@ -307,14 +310,14 @@
       // from overlapping when their heights differ.
       const minCardWidth = 260;
       const gapSize = 20;
-      const data = loadDashboardData();
-      const categories = (data.categories || []).filter(cat => (cat.status || 'plan') === 'plan');
       container.style.display = 'grid';
       container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${minCardWidth}px, 1fr))`;
       container.style.gap = `${gapSize}px`;
       // Allow the container height to grow naturally. Scrolling is handled by the
       // surrounding .dashboard-container element.
       container.style.height = 'auto';
+      const data = loadDashboardData();
+      const categories = data.categories ? data.categories.filter(cat => cat.status === 'plan') : [];
       categories.forEach((cat, index) => {
         const card = document.createElement('div');
         card.className = 'card';
