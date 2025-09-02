@@ -517,34 +517,18 @@
       // In the new layout, the header is contained within the main-content section
       const headerEl = document.querySelector('.main-header');
       const headerHeight = headerEl ? headerEl.offsetHeight : 0;
-      // Compute available height using the main-content element. This is more reliable than
-      // window.innerHeight when other elements might affect sizing.
-      const mainContentEl = document.querySelector('.main-content');
-      const availableHeight = mainContentEl ? mainContentEl.clientHeight - headerHeight - 20 : (window.innerHeight - headerHeight - 40);
-      // Determine how many columns can fit based on a reduced minimum card width. A smaller
-      // width allows more cards per row, helping to keep everything visible on one page.
-      // Reduce the minimum card width to allow more cards per row on wide screens. A smaller
-      // width helps prevent cards from being squeezed vertically and reduces the likelihood
-      // of overlapping charts. You can adjust this value as needed.
+      // Use a responsive CSS grid layout. We let the browser automatically decide how
+      // many cards to place per row using auto-fit. The minimum card width controls
+      // how narrow cards can get before wrapping to the next row.
       const minCardWidth = 260;
       const gapSize = 20;
-      // Account for sidebar width when calculating available width for the dashboard
-      const sidebarEl = document.querySelector('.sidebar');
-      const containerWidth = window.innerWidth - (sidebarEl ? sidebarEl.offsetWidth : 0) - 40; // account for padding/margin
-      let columns = Math.floor((containerWidth + gapSize) / (minCardWidth + gapSize));
-      if (columns < 1) columns = 1;
       const data = loadDashboardData();
-      const categoriesCount = data.categories.length;
-      // Limit columns to the number of categories
-      columns = Math.min(columns, categoriesCount);
-      const rows = Math.ceil(categoriesCount / columns) || 1;
-      // Apply grid layout dynamically. We do not fix the number of rows; letting the
-      // grid auto-size its rows prevents charts from overlapping when their heights differ.
       container.style.display = 'grid';
-      container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-      // Do not set gridTemplateRows to 1fr; letting rows auto-size avoids forced equal heights.
+      container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${minCardWidth}px, 1fr))`;
       container.style.gap = `${gapSize}px`;
-      container.style.height = `${availableHeight}px`;
+      // Allow the container height to grow naturally. The surrounding layout handles
+      // scrolling if needed.
+      container.style.height = 'auto';
       // Now iterate over categories to create cards and charts
       data.categories.forEach((cat, index) => {
         // Create card container
