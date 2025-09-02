@@ -138,12 +138,27 @@
       background-color: rgba(255, 255, 255, 0.1);
     }
     .dashboard-container {
+      /* Enable vertical scrolling if the list of actions exceeds the available height. */
       flex: 1;
       position: relative;
-      /* Allow vertical scrolling if the content exceeds the available height. */
       overflow-y: auto;
       overflow-x: hidden;
-      height: 100%;
+
+      /* Responsive grid layout: automatically wrap cards onto new rows based on
+         available width. The minimum card width should match the value
+         provided in JavaScript (260 px). */
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+
+      /* Ensure rows have a consistent base height while allowing them to grow
+         naturally when cards contain longer content (e.g. comments). */
+      grid-auto-rows: minmax(280px, auto);
+
+      /* Center the rows within the container so that when fewer cards are
+         present on a row, they remain centered instead of left-aligned. */
+      justify-content: center;
+      align-items: stretch;
     }
     .card {
       background: var(--card-bg);
@@ -153,8 +168,9 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 320px;
-      height: 100%;
+      /* Reduce the minimum height of cards to leave more space for comments. */
+      min-height: 280px;
+      height: auto;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
