@@ -152,8 +152,10 @@
       gap: 20px;
 
       /* Ensure rows have a consistent base height while allowing them to grow
-         naturally when cards contain longer content (e.g. comments). */
-      grid-auto-rows: minmax(280px, auto);
+         naturally when cards contain longer content (e.g. comments).  The
+         base height is reduced to 240 px so that the cards (pilliers) are
+         shorter and comments are more visible. */
+      grid-auto-rows: minmax(240px, auto);
 
       /* Center the rows within the container so that when fewer cards are
          present on a row, they remain centered instead of left-aligned. */
@@ -168,8 +170,10 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      /* Reduce the minimum height of cards to leave more space for comments. */
-      min-height: 280px;
+      /* Further reduce the minimum height of cards to make each action pillar
+         more compact, leaving room at the bottom for comments or additional
+         controls. */
+      min-height: 240px;
       height: auto;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -208,9 +212,10 @@
       align-items: center;
     }
 
-    /* Fix the height of each chart container to avoid overlap between cards. */
+    /* Fix the height of each chart container and shorten charts slightly to
+       create space below for comments and actions. */
     .chart-container {
-      height: 180px;
+      height: 150px;
     }
   </style>
 </head>
@@ -437,8 +442,20 @@
           remainderColour = remainderColour.trim();
           chartConfig = {
             type: 'doughnut',
-            data: { labels: ['Réel', 'Manquant'], datasets: [{ data: [ratio, 100 - ratio], backgroundColor: [colourActual, remainderColour], borderColor: [colourActual, remainderColour], borderWidth: 1 }] },
-            options: { rotation: -90, circumference: 180, cutout: '70%', plugins: { legend: { display: false }, tooltip: { enabled: false }, title: { display: true, text: ratio.toFixed(0) + '%', color: colourActual, position: 'bottom', font: { size: 24, weight: 'bold' } } } }
+            data: {
+              labels: ['Réel', 'Manquant'],
+              datasets: [{ data: [ratio, 100 - ratio], backgroundColor: [colourActual, remainderColour], borderColor: [colourActual, remainderColour], borderWidth: 1 }]
+            },
+            options: {
+              rotation: -90,
+              circumference: 180,
+              cutout: '70%',
+              plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false },
+                title: { display: true, text: ratio.toFixed(0) + '%', color: colourActual, position: 'bottom', font: { size: 24, weight: 'bold' } }
+              }
+            }
           };
         } else {
           chartConfig = {
