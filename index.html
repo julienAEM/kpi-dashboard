@@ -9,10 +9,11 @@
   <style>
     /* CSS custom properties allow the theme to be customized dynamically. */
     :root {
-      --bg-color: #253746;            /* dark background similar to company palette */
-      --header-bg: #142d48;           /* header background */
-      --card-bg: #1f3a55;             /* card background */
-      --accent-color: #007bff;        /* accent color for titles and links */
+      /* Softer palette for improved readability and a more modern feel. */
+      --bg-color: #1e2a38;            /* overall background is slightly lighter */
+      --header-bg: #152c4b;           /* header background remains dark but contrasts well */
+      --card-bg: #23395d;             /* card backgrounds slightly lighter for improved contrast */
+      --accent-color: #0099ff;        /* brighter blue for accent elements */
     }
     body {
       margin: 0;
@@ -48,24 +49,35 @@
       text-decoration: none;
       font-size: 14px;
     }
+    /*
+      Card grid container. We rely on JavaScript to calculate the number of columns and rows,
+      but reduce the minimum card width to allow more cards to fit on larger screens.  
+    */
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); /* larger cards on bigger screens */
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
       gap: 20px;
       padding: 20px;
     }
     .card {
       background: var(--card-bg);
       border: 1px solid var(--accent-color);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      /* Ensure each card fills its grid cell so that the overall layout can adapt
-         to the viewport height. */
+      /* Cards fill their grid cell. A minimum height helps to balance the layout across
+         different screen heights. */
+      min-height: 320px;
       height: 100%;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
     }
     .card h2 {
       font-size: 20px;
@@ -503,10 +515,13 @@
       // In the new layout, the header is contained within the main-content section
       const headerEl = document.querySelector('.main-header');
       const headerHeight = headerEl ? headerEl.offsetHeight : 0;
-      // Available vertical space for the dashboard (subtract a small margin for padding)
-      const availableHeight = window.innerHeight - headerHeight - 40;
-      // Determine how many columns can fit based on a minimum card width (approx. 450px + gap)
-      const minCardWidth = 450;
+      // Compute available height using the main-content element. This is more reliable than
+      // window.innerHeight when other elements might affect sizing.
+      const mainContentEl = document.querySelector('.main-content');
+      const availableHeight = mainContentEl ? mainContentEl.clientHeight - headerHeight - 20 : (window.innerHeight - headerHeight - 40);
+      // Determine how many columns can fit based on a reduced minimum card width. A smaller
+      // width allows more cards per row, helping to keep everything visible on one page.
+      const minCardWidth = 350;
       const gapSize = 20;
       // Account for sidebar width when calculating available width for the dashboard
       const sidebarEl = document.querySelector('.sidebar');

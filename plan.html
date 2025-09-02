@@ -9,10 +9,11 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg-color: #253746;
-      --header-bg: #142d48;
-      --card-bg: #1f3a55;
-      --accent-color: #007bff;
+      /* Softer palette for improved readability */
+      --bg-color: #1e2a38;
+      --header-bg: #152c4b;
+      --card-bg: #23395d;
+      --accent-color: #0099ff;
     }
     body {
       margin: 0;
@@ -140,7 +141,6 @@
     .dashboard-container {
       flex: 1;
       position: relative;
-      /* Allow vertical scrolling if the content exceeds the available height. */
       overflow-y: auto;
       overflow-x: hidden;
       height: 100%;
@@ -148,13 +148,19 @@
     .card {
       background: var(--card-bg);
       border: 1px solid var(--accent-color);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      min-height: 320px;
       height: 100%;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
     }
     .card h2 {
       font-size: 20px;
@@ -274,10 +280,12 @@
       container.innerHTML = '';
       const headerEl = document.querySelector('.main-header');
       const headerHeight = headerEl ? headerEl.offsetHeight : 0;
-      const availableHeight = window.innerHeight - headerHeight - 40;
+      // Use the main-content height rather than window.innerHeight for better accuracy
+      const mainContentEl = document.querySelector('.main-content');
+      const availableHeight = mainContentEl ? mainContentEl.clientHeight - headerHeight - 20 : (window.innerHeight - headerHeight - 40);
       const sidebarEl = document.querySelector('.sidebar');
       const containerWidth = window.innerWidth - (sidebarEl ? sidebarEl.offsetWidth : 0) - 40;
-      const minCardWidth = 450;
+      const minCardWidth = 350;
       const gapSize = 20;
       let columns = Math.floor((containerWidth + gapSize) / (minCardWidth + gapSize));
       if (columns < 1) columns = 1;
