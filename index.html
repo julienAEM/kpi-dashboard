@@ -242,7 +242,10 @@
     .dashboard-container {
       flex: 1;
       position: relative;
-      overflow: hidden;
+      /* Allow vertical scrolling if the content exceeds the available height. This ensures
+         that all categories remain accessible on smaller screens while keeping
+         the header and sidebar fixed. */
+      overflow-y: auto;
       /* Fill available height so that the grid will expand to the height of
          .main-content. This helps keep all dashboard cards visible on a
          single screen. */
