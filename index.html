@@ -115,7 +115,9 @@
       /* Let the chart container expand to fill available vertical space
          within the card; the actual height will be controlled by the grid layout. */
       flex: 1 1 auto;
-      height: auto;
+      /* Fix the height of each chart to prevent canvas overflow and card overlap.
+         A smaller height leaves more breathing room for multiple rows of cards. */
+      height: 180px;
     }
     /* Layout for dashboard: create a sidebar for navigation and filters, and a main content area */
     .layout {
@@ -521,7 +523,10 @@
       const availableHeight = mainContentEl ? mainContentEl.clientHeight - headerHeight - 20 : (window.innerHeight - headerHeight - 40);
       // Determine how many columns can fit based on a reduced minimum card width. A smaller
       // width allows more cards per row, helping to keep everything visible on one page.
-      const minCardWidth = 350;
+      // Reduce the minimum card width to allow more cards per row on wide screens. A smaller
+      // width helps prevent cards from being squeezed vertically and reduces the likelihood
+      // of overlapping charts. You can adjust this value as needed.
+      const minCardWidth = 260;
       const gapSize = 20;
       // Account for sidebar width when calculating available width for the dashboard
       const sidebarEl = document.querySelector('.sidebar');
@@ -533,10 +538,11 @@
       // Limit columns to the number of categories
       columns = Math.min(columns, categoriesCount);
       const rows = Math.ceil(categoriesCount / columns) || 1;
-      // Apply grid layout dynamically
+      // Apply grid layout dynamically. We do not fix the number of rows; letting the
+      // grid auto-size its rows prevents charts from overlapping when their heights differ.
       container.style.display = 'grid';
       container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-      container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+      // Do not set gridTemplateRows to 1fr; letting rows auto-size avoids forced equal heights.
       container.style.gap = `${gapSize}px`;
       container.style.height = `${availableHeight}px`;
       // Now iterate over categories to create cards and charts
@@ -744,7 +750,8 @@
           }
         }
         const chartInstance = new Chart(ctx, chartConfig);
-        // Force resize to ensure the chart adapts to its container and prevent overlap
+        // Force the chart to resize to its container after creation. This prevents
+        // charts from overflowing their cards and helps maintain a consistent layout.
         if (typeof chartInstance.resize === 'function') {
           chartInstance.resize();
         }
