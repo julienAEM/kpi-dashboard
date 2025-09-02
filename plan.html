@@ -139,11 +139,27 @@
       background-color: rgba(255, 255, 255, 0.1);
     }
     .dashboard-container {
+      /* Allow vertical scrolling if there are many objective cards. */
       flex: 1;
       position: relative;
       overflow-y: auto;
       overflow-x: hidden;
-      height: 100%;
+
+      /* Responsive grid layout: automatically wrap objectives to new rows.
+         The minimum card width should mirror the JavaScript value (260 px). */
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+
+      /* Uniform row heights: each row will be at least the minimum card height
+         and can grow as needed.  This keeps rows aligned even if some cards
+         contain longer comments. */
+      grid-auto-rows: minmax(280px, auto);
+
+      /* Center the row contents: when there are fewer cards in a row, they
+         appear centered rather than flush left. */
+      justify-content: center;
+      align-items: stretch;
     }
     .card {
       background: var(--card-bg);
@@ -153,8 +169,9 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 320px;
-      height: 100%;
+      /* Decrease minimum card height to allow more room for comments below charts. */
+      min-height: 280px;
+      height: auto;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
