@@ -69,8 +69,11 @@
       justify-content: space-between;
       /* Cards fill their grid cell. A minimum height helps to balance the layout across
          different screen heights. */
-      min-height: 320px;
-      height: 100%;
+      /* Reduce the minimum height of cards to free space for comments and avoid
+         unnecessary vertical stretching. The card height will expand naturally
+         based on its content. */
+      min-height: 280px;
+      height: auto;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -254,16 +257,30 @@
     }
     /* Container for the dashboard cards inside main-content */
     .dashboard-container {
+      /* Allow the dashboard to scroll vertically if there are many cards. */
       flex: 1;
       position: relative;
-      /* Allow vertical scrolling if the content exceeds the available height. This ensures
-         that all categories remain accessible on smaller screens while keeping
-         the header and sidebar fixed. */
       overflow-y: auto;
-      /* Fill available height so that the grid will expand to the height of
-         .main-content. This helps keep all dashboard cards visible on a
-         single screen. */
-      height: 100%;
+      overflow-x: hidden;
+
+      /* Set up a responsive grid layout entirely via CSS.  The browser will
+         automatically wrap cards to new rows based on available space.  The
+         minimum card width matches the value used in JavaScript (260 px). */
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+
+      /* Ensure rows are uniform in height: each row is at least the minimum
+         card height and can grow if a card contains more content (such as a
+         long comment).  This prevents cards on different rows from
+         overlapping visually. */
+      grid-auto-rows: minmax(280px, auto);
+
+      /* Center the collection of cards within the container so that when a row
+         contains fewer items (for example, two cards on a wide screen) they
+         remain centered rather than aligned hard to the left. */
+      justify-content: center;
+      align-items: stretch;
     }
 
     /* Increase font sizes and card dimensions on very large screens (e.g. 85'' TV) */
